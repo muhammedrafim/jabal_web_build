@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="jabal_met">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+  <title>jabal_met</title>
+  <link rel="manifest" href="manifest.json">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+  <!-- This script installs service_worker.js to provide PWA functionality to
+       application. For more information, see:
+       https://developers.google.com/web/fundamentals/primers/service-workers -->
+       
+       <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-analytics.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/7.14.6/firebase-messaging.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyBY7D2ZqoawQBqYHjmS9rcpHWBXXtvyT7A",
+    authDomain: "jabalmet.firebaseapp.com",
+    databaseURL: "https://jabalmet.firebaseio.com",
+    projectId: "jabalmet",
+    storageBucket: "jabalmet.appspot.com",
+    messagingSenderId: "973738274082",
+    appId: "1:973738274082:web:77be6568b20a9ad44b897b",
+    measurementId: "G-YZT27E22ER"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+  const messaging=firebase.messaging();
+
+    function IntitalizeFireBaseMessaging() {
+        messaging
+            .requestPermission()
+            .then(function () {
+                console.log("Notification Permission");
+                return messaging.getToken();
+            })
+            .then(function (token) {
+                console.log("Token : "+token);
+            /*     $.ajax({
+                     method:"post",
+        url: 'http://localhost:8081/fcm_token',
+        data:{"id": "10", "type":"1", "token":token},
+        dataType: 'json',
+        success: function (data) {
+       //   if (data.is_taken) {
+          //  alert("A user with this username already exists.");
+         // }
+            console.log(data);
+           // alert("success");
+        }
+      });
+*/
+sessionStorage.setItem("key", token);
+        });
+          }
+          messaging.onTokenRefresh(function () {
+
+messaging.getToken()
+    .then(function (newtoken) {
+
+        console.log("New Token : "+ newtoken);
+      /*  $.ajax({
+                     method:"post",
+        url: 'http://localhost:8081/fcm_token',
+        data:{"id": "10", "type":"1", "token":newtoken},
+        dataType: 'json',
+        success: function (data) {
+       //   if (data.is_taken) {
+          //  alert("A user with this username already exists.");
+         // }
+            console.log(data);
+           // alert("success");
+        }
+      });*/
+sessionStorage.setItem("key", newtoken);
+
+      });
+    });
+    IntitalizeFireBaseMessaging();
+    messaging.onMessage(function (payload) {
+        console.log(payload);
+        const notificationOption={
+            body:payload.notification.body,
+        };
+
+        if(Notification.permission==="granted"){
+            var notification=new Notification(payload.notification.title,notificationOption);
+
+            notification.onclick=function (ev) {
+                ev.preventDefault();
+                window.open(payload.data.click,'_blank');
+                notification.close();
+            }
+        }
+
+    });
+
+</script>
+       
+       <script>
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", function () {
+            // navigator.serviceWorker.register("/flutter_service_worker.js");
+            navigator.serviceWorker.register("firebase-messaging-sw.js");
+          });
+        }
+        </script>
+
+  <script src="main.dart.js" type="application/javascript"></script>
+</body>
+</html>
